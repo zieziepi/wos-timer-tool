@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<title>wos-timer-tool</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="ホワサバの連撃で各部隊の出発秒を出力し、クリックでコピーできるツールです。">
+	<meta name="keywords" content="ホワイトアウトサバイバル, ホワサバ, 連撃, 着弾, 集結, 秒数, 計算, コピペ, ツール">
+	<style>
+		body {
+			font-family: sans-serif;
+			margin: 10px;
+			padding: 5px;
+			max-width: 600px;
+			margin-left: auto;
+			margin-right: auto;
+			box-sizing: border-box;
+		}
+
+		h3 {
+			text-align: left;
+			margin-bottom: 15px;
+		}
+
+		.input-row {
+			margin-bottom: 0px;
+			padding: 2px 0px;
+			display: flex;
+			flex-wrap: nowrap;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.input-row label {
+			margin-right: 0;
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
+
+		.name-input {
+			flex-shrink: 1;
+			padding: 4px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			font-size: 1rem;
+			max-width: 100px;
+			min-width: 80px;
+		}
+
+		.sec-input {
+			width: 60px;
+			flex-shrink: 0;
+			padding: 4px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			font-size: 1rem;
+			text-align: center;
+		}
+
+		.output-list-item {
+			background-color: #f0f0f0;
+			border-radius: 4px;
+		}
+
+		.highlight-new {
+			background-color: #e0ffe0;
+		}
+
+		.button-container {
+			text-align: left;
+			margin-top: 10px;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.copy-button {
+			background-color: #007bff;
+			padding: 8px 15px;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 1rem;
+			white-space: nowrap;
+		}
+
+		.copy-button:hover {
+			background-color: #0056b3;
+		}
+
+		.copy-message {
+			margin-left: 10px;
+			color: green;
+			font-size: 0.9rem;
+			opacity: 0;
+			transition: opacity 0.3s ease-in-out;
+		}
+
+		.copy-message.show {
+			opacity: 1;
+		}
+
+		.tab-container {
+			display: flex;
+			margin-bottom: 10px;
+			border-bottom: 2px solid #ccc;
+		}
+
+		.tab-button {
+			padding: 8px 15px;
+			border: 1px solid #ccc;
+			border-bottom: none;
+			border-radius: 6px 6px 0 0;
+			background-color: #fff;
+			cursor: pointer;
+			font-weight: bold;
+			color: rgb(128, 128, 128);
+			margin-right: 2px;
+			transition: background-color 0.3s, color 0.3s;
+			font-size: 12pt;
+		}
+
+		.tab-button.active {
+			background-color: #f0f0f0;
+			border-bottom: 2px solid #f0f0f0;
+			color: #000;
+			cursor: default;
+		}
+
+		.tab-button:not(.active):hover {
+			background-color: #e0e0e0;
+		}
+
+		.tab-content {
+			display: none;
+			padding-top: 10px;
+			border-top: none;
+		}
+
+		.tab-content.active {
+			display: block;
+		}
+
+		/* スマホ用 */
+		@media (max-width: 480px) {
+			body {
+				margin: 0;
+				padding: 5px;
+			}
+
+			h3 {
+				font-size: 1.2rem;
+				margin-bottom: 10px;
+			}
+
+			.input-row {
+				padding: 1px 0px;
+				gap: 5px;
+				margin-bottom: 0px;
+			}
+
+			.name-input {
+				padding: 3px;
+				min-width: 60px;
+			}
+
+			.sec-input {
+				width: 50px;
+				min-width: 50px;
+				max-width: 50px;
+				padding: 3px;
+				text-align: center;
+			}
+
+			.copy-button {
+				padding: 6px 10px;
+				font-size: 0.9rem;
+			}
+
+			.copy-message {
+				font-size: 0.8rem;
+			}
+
+		}
+	</style>
+</head>
+
+<body>
+	<div class="tab-container">
+		<button class="tab-button active" onclick="openTab(event, 'page1')">太陽</button>
+		<button class="tab-button" onclick="openTab(event, 'page2')">東</button>
+		<button class="tab-button" onclick="openTab(event, 'page3')">西</button>
+		<button class="tab-button" onclick="openTab(event, 'page4')">南</button>
+		<button class="tab-button" onclick="openTab(event, 'page5')">北</button>
+	</div>
+
+	<div id="page1" class="tab-content active">
+		<h3>集結主の情報を入力してください</h3>
+		<div class="input-forms-container">
+			<div class="input-row" data-id="0">
+				<label for="nameInput-page1-0">名前：</label><input type="text" id="nameInput-page1-0" class="name-input"
+					oninput="handleInput()" />
+				<label for="secInput-page1-0">秒数:</label><input type="number" id="secInput-page1-0" class="sec-input"
+					oninput="handleInput()" />
+			</div>
+		</div>
+
+		<h3>集結時間リスト</h3>
+		<div class="output-list">
+			入力がありません。
+		</div>
+		<div class="button-container">
+			<button class="copy-button" onclick="copyToClipboard()">コピー</button>
+			<span class="copy-message">コピーしました！</span>
+		</div>
+	</div>
+
+	<div id="page2" class="tab-content">
+		<h3>集結主の情報を入力してください</h3>
+		<div class="input-forms-container">
+			<div class="input-row" data-id="0">
+				<label for="nameInput-page2-0">名前：</label><input type="text" id="nameInput-page2-0" class="name-input"
+					oninput="handleInput()" />
+				<label for="secInput-page2-0">秒数:</label><input type="number" id="secInput-page2-0" class="sec-input"
+					oninput="handleInput()" />
+			</div>
+		</div>
+
+		<h3>集結時間リスト</h3>
+		<div class="output-list">
+			入力がありません。
+		</div>
+		<div class="button-container">
+			<button class="copy-button" onclick="copyToClipboard()">コピー</button>
+			<span class="copy-message">コピーしました！</span>
+		</div>
+	</div>
+
+	<div id="page3" class="tab-content">
+		<h3>集結主の情報を入力してください</h3>
+		<div class="input-forms-container">
+			<div class="input-row" data-id="0">
+				<label for="nameInput-page3-0">名前：</label><input type="text" id="nameInput-page3-0" class="name-input"
+					oninput="handleInput()" />
+				<label for="secInput-page3-0">秒数:</label><input type="number" id="secInput-page3-0" class="sec-input"
+					oninput="handleInput()" />
+			</div>
+		</div>
+
+		<h3>集結時間リスト</h3>
+		<div class="output-list">
+			入力がありません。
+		</div>
+		<div class="button-container">
+			<button class="copy-button" onclick="copyToClipboard()">コピー</button>
+			<span class="copy-message">コピーしました！</span>
+		</div>
+	</div>
+
+	<div id="page4" class="tab-content">
+		<h3>集結主の情報を入力してください</h3>
+		<div class="input-forms-container">
+			<div class="input-row" data-id="0">
+				<label for="nameInput-page4-0">名前：</label><input type="text" id="nameInput-page4-0" class="name-input"
+					oninput="handleInput()" />
+				<label for="secInput-page4-0">秒数:</label><input type="number" id="secInput-page4-0" class="sec-input"
+					oninput="handleInput()" />
+			</div>
+		</div>
+
+		<h3>集結時間リスト</h3>
+		<div class="output-list">
+			入力がありません。
+		</div>
+		<div class="button-container">
+			<button class="copy-button" onclick="copyToClipboard()">コピー</button>
+			<span class="copy-message">コピーしました！</span>
+		</div>
+	</div>
+
+	<div id="page5" class="tab-content">
+		<h3>集結主の情報を入力してください</h3>
+		<div class="input-forms-container">
+			<div class="input-row" data-id="0">
+				<label for="nameInput-page5-0">名前：</label><input type="text" id="nameInput-page5-0" class="name-input"
+					oninput="handleInput()" />
+				<label for="secInput-page5-0">秒数:</label><input type="number" id="secInput-page5-0" class="sec-input"
+					oninput="handleInput()" />
+			</div>
+		</div>
+
+		<h3>集結時間リスト</h3>
+		<div class="output-list">
+			入力がありません。
+		</div>
+		<div class="button-container">
+			<button class="copy-button" onclick="copyToClipboard()">コピー</button>
+			<span class="copy-message">コピーしました！</span>
+		</div>
+	</div>
+
+	<script>
+		// 各タブの状態を保持するオブジェクト
+		const pageStates = {
+			page1: {
+				nextInputId: 1,
+			},
+			page2: {
+				nextInputId: 1,
+			},
+			page3: {
+				nextInputId: 1,
+			},
+			page4: {
+				nextInputId: 1,
+			},
+			page5: {
+				nextInputId: 1,
+			},
+		};
+
+		let activePageId = 'page1'; // 現在アクティブなページのID
+
+		// タブ切り替え処理
+		function openTab(evt, pageId) {
+			let i, tabContent, tabButtons;
+
+			tabContent = document.getElementsByClassName("tab-content");
+			for (i = 0; i < tabContent.length; i++) {
+				tabContent[i].style.display = "none";
+				tabContent[i].classList.remove('active');
+			}
+
+			tabButtons = document.getElementsByClassName("tab-button");
+			for (i = 0; i < tabButtons.length; i++) {
+				tabButtons[i].classList.remove("active");
+			}
+
+			document.getElementById(pageId).style.display = "block";
+			document.getElementById(pageId).classList.add('active');
+			evt.currentTarget.classList.add("active");
+
+			activePageId = pageId; // アクティブなページを更新
+
+			// アクティブなタブに切り替わったときに、そのタブのinputを再度評価
+			handleInput();
+		}
+
+		function addInputRow() {
+			const container = document.querySelector(`#${activePageId} .input-forms-container`);
+			const newState = pageStates[activePageId];
+			const newRow = document.createElement('div');
+			newRow.className = 'input-row highlight-new';
+			const currentId = newState.nextInputId++; // 一意のIDを割り当ててインクリメント
+			newRow.dataset.id = currentId;
+
+			// IDとfor属性にアクティブなページのIDを付加
+			newRow.innerHTML = `
+                <label for="nameInput-${activePageId}-${currentId}">名前：</label><input type="text" id="nameInput-${activePageId}-${currentId}" class="name-input" oninput="handleInput()" />
+                <label for="secInput-${activePageId}-${currentId}">秒数:</label><input type="number" id="secInput-${activePageId}-${currentId}" class="sec-input" oninput="handleInput()" />
+            `;
+			container.appendChild(newRow);
+
+			// スクロールして新しい入力行が見えるようにする
+			newRow.scrollIntoView({
+				behavior: 'smooth',
+				block: 'nearest'
+			});
+
+			setTimeout(() => {
+				newRow.classList.remove('highlight-new');
+			}, 1000);
+		}
+
+		function handleInput() {
+			const container = document.querySelector(`#${activePageId} .input-forms-container`);
+			let inputRows = Array.from(container.querySelectorAll('.input-row'));
+			let rawEntries = [];
+			let rowsToDelete = [];
+
+			// 現在の入力行を評価し、削除対象をマーク
+			inputRows.forEach(row => {
+				const nameInput = row.querySelector('.name-input');
+				const secInput = row.querySelector('.sec-input');
+
+				const name = nameInput ? nameInput.value.trim() : '';
+				const sec = secInput ? parseInt(secInput.value, 10) : NaN;
+
+				// 名前が空の場合、かつそれが最初の行ではない場合、または最初の行で両方空の場合、削除対象とする
+				// ただし、最後の行が完全に空の場合は、ユーザーが入力中の可能性があるので即座には削除しない
+				const isLastRow = (row === inputRows[inputRows.length - 1]);
+
+				if (name === '' && isNaN(sec)) {
+					// 完全に空の行
+					if (!isLastRow && inputRows.length > 1) { // 途中の完全に空の行は削除
+						rowsToDelete.push(row);
+					}
+				} else if (name === '' && !isNaN(sec)) {
+					// 名前は空だが秒数がある場合は、有効な入力とは見なさないが削除も即座にはしない (ユーザー入力中を考慮)
+					// このケースでは、後の有効な入力でのみ処理
+				} else if (name !== '' && isNaN(sec)) {
+					// 名前はあるが秒数が空の場合は、有効な入力とは見なさないが削除も即座にはしない (ユーザー入力中を考慮)
+				}
+
+
+				if (name !== '' && !isNaN(sec) && sec >= 0) {
+					rawEntries.push({
+						name: name,
+						sec: sec
+					});
+				}
+			});
+
+			// 削除対象の行を実際に削除
+			rowsToDelete.forEach(row => {
+				container.removeChild(row);
+			});
+
+			// 削除後にinputRowsを再取得して、現在の正確な行数を反映
+			inputRows = Array.from(container.querySelectorAll('.input-row'));
+
+			rawEntries.sort((a, b) => b.sec - a.sec);
+
+			let displayedEntries = [];
+			if (rawEntries.length > 0) {
+				const maxSec = rawEntries[0].sec;
+				rawEntries.forEach(entry => {
+					const calculatedSec = entry.sec - maxSec;
+					displayedEntries.push({
+						name: entry.name,
+						sec: Math.abs(calculatedSec).toString().padStart(2, '0')
+					});
+				});
+				if (displayedEntries.length > 0) {
+					displayedEntries[0].sec = '00';
+				}
+
+			}
+
+			const outputList = document.querySelector(`#${activePageId} .output-list`);
+			outputList.innerHTML = '';
+
+			if (displayedEntries.length === 0) {
+				outputList.textContent = '入力がありません。';
+			} else {
+				displayedEntries.forEach(entry => {
+					const div = document.createElement('div');
+					div.className = 'output-list-item';
+					div.textContent = `${entry.name}  ：  ${entry.sec}`;
+					outputList.appendChild(div);
+				});
+			}
+
+			// 最後の入力行が全て入力されているか、または全く行がない場合に新しい行を追加
+			const lastInputRow = inputRows[inputRows.length - 1];
+			if (!lastInputRow || (lastInputRow.querySelector('.name-input').value.trim() !== '' && lastInputRow.querySelector('.sec-input').value.trim() !== '' && !isNaN(parseInt(lastInputRow.querySelector('.sec-input').value, 10)))) {
+				addInputRow();
+			}
+		}
+
+
+		function copyToClipboard() {
+			const outputList = document.querySelector(`#${activePageId} .output-list`);
+			const copyMessage = document.querySelector(`#${activePageId} .copy-message`);
+			let textToCopy = '';
+
+			const hasListItems = outputList.querySelector('.output-list-item') !== null;
+
+			if (!hasListItems) {
+				copyMessage.textContent = 'コピーする内容がありません。';
+				copyMessage.style.color = 'orange';
+				copyMessage.classList.add('show');
+				setTimeout(() => {
+					copyMessage.classList.remove('show');
+				}, 2000);
+				return;
+			}
+
+			Array.from(outputList.children).forEach(item => {
+				if (item.classList.contains('output-list-item')) {
+					textToCopy += item.textContent + '\n';
+				}
+			});
+
+			textToCopy = textToCopy.trim();
+
+			navigator.clipboard.writeText(textToCopy)
+				.then(() => {
+					copyMessage.textContent = 'コピーしました！';
+					copyMessage.style.color = 'green';
+					copyMessage.classList.add('show');
+					setTimeout(() => {
+						copyMessage.classList.remove('show');
+					}, 2000);
+				})
+				.catch(err => {
+					console.error('クリップボードへのコピーに失敗しました', err);
+					copyMessage.textContent = 'コピーに失敗しました。';
+					copyMessage.style.color = 'red';
+					copyMessage.classList.add('show');
+					setTimeout(() => {
+						copyMessage.classList.remove('show');
+					}, 2000);
+				});
+		}
+
+		// ページロード時に最初のタブを開く
+		document.addEventListener('DOMContentLoaded', () => {
+			document.querySelector('.tab-button').click(); // 最初のタブをアクティブにする
+		});
+	</script>
+</body>
+
+</html>
