@@ -1,0 +1,175 @@
+body {
+  font-family: sans-serif;
+  margin: 10px;
+  padding: 5px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+h3 {
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.input-row {
+  margin-bottom: 0px;
+  padding: 2px 0px;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-row label {
+  margin-right: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.name-input {
+  flex-shrink: 1;
+  padding: 4px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-size: 1rem;
+  max-width: 100px;
+  min-width: 80px;
+}
+
+.sec-input {
+  width: 60px;
+  flex-shrink: 0;
+  padding: 4px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.output-list-item {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.highlight-new {
+  background-color: #e0ffe0;
+}
+
+.button-container {
+  text-align: left;
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
+.copy-button {
+  background-color: #007bff;
+  padding: 8px 15px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.copy-button:hover {
+  background-color: #0056b3;
+}
+
+.copy-message {
+  margin-left: 10px;
+  color: green;
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.copy-message.show {
+  opacity: 1;
+}
+
+.tab-container {
+  display: flex;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #000000;
+}
+
+.tab-button {
+  padding: 8px 15px;
+  border: 1px solid #000;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background-color: #ccc;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+  margin-right: 2px;
+  font-size: 12pt;
+}
+
+.tab-button.active {
+  background-color: #fff;
+  border-bottom: 2px solid #f0f0f0;
+  color: #000;
+  cursor: default;
+}
+
+.tab-button:not(.active):hover {
+  background-color: #e0e0e0;
+}
+
+.tab-content {
+  display: none;
+  padding-top: 10px;
+  border-top: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* スマホ用 */
+@media (max-width: 480px) {
+  body {
+    margin: 0;
+    padding: 5px;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+
+  .input-row {
+    padding: 1px 0px;
+    gap: 5px;
+    margin-bottom: 0px;
+  }
+
+  .name-input {
+    padding: 3px;
+    min-width: 60px;
+  }
+
+  .sec-input {
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+    padding: 3px;
+    text-align: center;
+  }
+
+  .copy-button {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+
+  .copy-message {
+    font-size: 0.8rem;
+  }
+}
